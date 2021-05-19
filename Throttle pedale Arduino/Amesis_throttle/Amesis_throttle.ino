@@ -14,7 +14,7 @@ Instagram : https://www.instagram.com/?hl=fr
 NomDuProjet : Amesis_throttle 
 Version     : v1.0 18/05/2021
 ButDuProjet : Renvoyer la valeur de la pédale (du groupe VAG "VR5 AQN" de 0 à 100 % sur le port serie.
-ProjetDisponibleIciGitHub : 
+ProjetDisponibleIciGitHub : https://github.com/AmesisProject/002-Amesis-Throttle_To_ThrottleBody_Arduino/tree/main/Throttle%20pedale%20Arduino
 
 Merci de faire suivre sur github toute modification au amélioration du code.
 
