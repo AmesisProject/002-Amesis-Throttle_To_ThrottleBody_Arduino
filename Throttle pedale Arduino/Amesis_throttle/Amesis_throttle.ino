@@ -10,7 +10,8 @@ Instagram : https://www.instagram.com/?hl=fr
   
   licence OpenSource non comercialisable, modifiable en citant le propriétaire AmesisProject avec l'un des liens ci dessus
   Sur base de l'exmple arduino AnalogInOutSerial
-  
+
+002-Amesis-Throttle_To_ThrottleBody_Arduino  
 NomDuProjet : Amesis_throttle 
 Version     : v1.0 18/05/2021
 ButDuProjet : Renvoyer la valeur de la pédale (du groupe VAG "VR5 AQN" de 0 à 100 % sur le port serie.
@@ -34,8 +35,8 @@ Branchement :
 //////////////////////////////
 
 const int PedalePin = A0;             // Pin analogique d'enté (input) du potentiometre
-      int Pedale = 0;                 // lire la vleur du potentiometre
-      int PedaleValeur = 0;           // valeur entre 0 et 100%
+      int PedaleNumerique = 0;        // lire la vleur du potentiometre en numerique de 0 à 1023
+      int PedaleValeur = 0;           // valeur entre 0 et 100% simplement la conversion du 0 à 1023 en 0 à 100%
 
       
 ///////////////////////////////
@@ -53,10 +54,10 @@ void setup() {
 
 void loop() {
   // Lectue de la valeur annalogique:
-  Pedale = analogRead(PedalePin);
+  PedaleNumerique = analogRead(PedalePin);
   
   // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeur de ma pédale, il se peut que d'autre pédale et des valeur differente, pour les trouver remplacer les valeur "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouvereai votre propre X et Y 
-  PedaleValeur = map(Pedale, 70, 474, 0, 100);
+  PedaleValeur = map(PedaleNumerique, 70, 474, 0, 100);
   
   // On renvoi les info sur le port serie pour la consol arduino
   Serial.print("Position de la pedale est à = ");
