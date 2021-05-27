@@ -55,7 +55,7 @@ const int TpsPin = A1;                // Pin analogique d'enté (input) du poten
 
 void setup() {
   
-  Serial.begin(9600);                  // initialisation du port serie a 9600 bps:  
+  Serial.begin(115200);                  // initialisation du port serie a 9600 bps:  
   
 }
 
@@ -69,18 +69,18 @@ void loop() {
  //Lecture Pédale
  
   PedaleNumerique = analogRead(PedalePin);                      // Lecture de la valeur annalogique
-  PedaleValeur = map(PedaleNumerique, 70, 474, 0, 100);         // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeur de ma pédale, il se peut que d'autre pédale et des valeur differente, pour les trouver remplacer les valeur "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouvereai votre propre X et Y 
+  PedaleValeur = map(PedaleNumerique, 76, 472, 0, 100);         // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeur de ma pédale, il se peut que d'autre pédale et des valeur differente, pour les trouver remplacer les valeur "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouvereai votre propre X et Y 
   
   Serial.print("Position de la pedale est à = ");               // On renvoi les info sur le port serie pour la consol arduino
   Serial.print(PedaleValeur);                                   // Revoie la valeur de la variable sur le port serie
-  Serial.println("%");                                          // Puis l'unité
+  Serial.print("%                ");                                          // Puis l'unité
  //----------------------------------------------------------------------
  
  //______________________________________________________________________
  //Lecture Boitier Papillon
 
    TpsNumerique = analogRead(TpsPin);                           // Lecture de la valeur annalogiqu
-   TpsValeur = map(TpsNumerique, 82, 919, 0, 100);              // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeur de ma pédale, il se peut que d'autre pédale et des valeur differente, pour les trouver remplacer les valeur "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouvereai votre propre X et Y 
+   TpsValeur = map(TpsNumerique, 100, 937, 0, 100);              // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeur de ma pédale, il se peut que d'autre pédale et des valeur differente, pour les trouver remplacer les valeur "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouvereai votre propre X et Y 
 
   Serial.print("Position du boitier papillon (TPS) est à = ");  // On renvoi les info sur le port serie pour la consol arduino
   Serial.print(TpsValeur);                                      // Revoie la valeur de la variable sur le port serie
