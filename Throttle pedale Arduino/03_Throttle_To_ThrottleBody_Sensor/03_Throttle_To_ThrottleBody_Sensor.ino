@@ -1,4 +1,3 @@
-
 /* Amesis Project 
    ^ ^
  =( '' )=
@@ -14,7 +13,7 @@ Instagram : https://www.instagram.com/?hl=fr
 002-Amesis-Throttle_To_ThrottleBody_Arduino  
 NomDuProjet : Amesis_throttle_To_ThrottleBody
 Version     : v1.0 25/05/2021
-ButDuProjet : Renvoyer la valeur de la pédale et du boitier papillon (du groupe VAG "VR5 AQN" de 0 à 100 % sur le port serie.
+ButDuProjet : Renvoyer la valeur de la pédale et du boitier papillon (du groupe VAG "VR5 AQN" de 0 à 100 % sur le port serie.)
 ProjetDisponibleIciGitHub : https://github.com/AmesisProject/002-Amesis-Throttle_To_ThrottleBody_Arduino/tree/main/Throttle%20pedale%20Arduino
 Merci de faire suivre sur github toute modification au amélioration du code.
 Branchement :
@@ -49,29 +48,12 @@ const int TpsPin = A1;                // Pin analogique d'enté (input) du poten
       int TpsValeur = 0;              // valeur entre 0 et 100% convertie depuis la valeur 0 à 1023
 
       int tempsDelay = 2;             //Pour la stabilité ou la lecture 
-
-
-
-// Pont en H L298N
-//Ports de commande du moteur B
-int motorPin1 = 8;
-int motorPin2 = 9;
-int enablePin = 5;
- 
-// Vitesse du moteur
-int state = 0;
-
       
 ///////////////////////////////
 //Inicialisation du l'arduino//
 ///////////////////////////////
 
 void setup() {
-    // Configuration des ports en mode "sortie"
-    pinMode(motorPin1, OUTPUT);
-    pinMode(motorPin2, OUTPUT);
-    pinMode(enablePin, OUTPUT);
-    
   
   Serial.begin(115200);                  // initialisation du port serie a 9600 bps:  
   
@@ -104,24 +86,6 @@ void loop() {
   Serial.print(TpsValeur);                                      // Revoie la valeur de la variable sur le port serie
   Serial.println("%");                                          // Puis l'unité
  //----------------------------------------------------------------------
-
-
-      if ( PedaleValeur > TpsValeur) // avant
-      {
-        digitalWrite(motorPin1, HIGH); 
-        digitalWrite(motorPin2, LOW);
-        Serial.print("Avant ");
-        Serial.println(state);
-      }
-      
-      else // Stop (freinage)
-      {
-        digitalWrite(motorPin1, HIGH); 
-        digitalWrite(motorPin2, HIGH);
-        Serial.println("Stop");
-      }
-    
-    
   
- // delay(tempsDelay);                               // On attend un delay en miliseconde pour que notre montage soit stable 
+  delay(tempsDelay);                               // On attend un delay en miliseconde pour que notre montage soit stable 
 }
