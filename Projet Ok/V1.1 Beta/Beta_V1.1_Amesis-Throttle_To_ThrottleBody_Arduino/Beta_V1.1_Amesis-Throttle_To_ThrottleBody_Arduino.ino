@@ -13,8 +13,9 @@ Amesiproject@gmail.com
   licence OpenSource non comercialisable, modifiable en citant le propriétaire AmesisProject avec l'un des liens ci dessus
   Sur base de l'exmple arduino AnalogInOutSerial
 002-Amesis-Throttle_To_ThrottleBody_Arduino  
-NomDuProjet : Beta_V1.1_Amesis-Throttle_To_ThrottleBody_Arduino
+NomDuProjet : Beta_V1.1_Amesis-Throttle_To_ThrottleBody_Arduino 
 Version     : Beta V1.1 30/05/2021
+YouTube     : https://youtu.be/v8cY9vEKRA4
 ButDuProjet : Renvoyer la valeur de la position pédale et position boitier papillon pour faire tourner le papillon (du groupe VAG "VR5 AQN" de 0 à 100 % sur le port serie. Et que le papillon motorisé bouge en fonctione de la position pédal.
 Problème à régler : La papillon oscille très légèrement (non perseptible à l'oeil mais on l'entend) sur la version pecédante il oscillé beaucoup trop, cela été sur au serial.begin trop lent. Je l'ai carrement supprimé pour la V Beta fonctionnelle.
 A ajouter : -La librairie des PID (pour affaiblire l'oscillation)
