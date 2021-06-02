@@ -1,29 +1,30 @@
 
 /* Amesis Project 
-   ^ ^
- =( '' )=
-  (")_(")
+    ^ ^
+  =( '')=
+   (")_(")
 Youtube   : https://www.youtube.com/channel/UCCexVZN3UYSep2lsj2jVjdg?sub_confirmation=1
 GitHub    : https://github.com/AmesisProject
 Discord   : https://discord.gg/vRAybmd3hk
 FaceBook  : https://www.facebook.com/amesis.pro.5
 Instagram : https://www.instagram.com/?hl=fr
-Amesiproject@gmail.com
+Amesisproject@gmail.com
   
-  licence OpenSource non comercialisable, modifiable en citant le propriétaire AmesisProject avec l'un des liens ci dessus
-  Sur base de l'exmple arduino AnalogInOutSerial
+  licence OpenSource CC-BY-NC-SA 
+  non commercialisable, modifiable en citant le propriétaire AmesisProject avec les liens ci dessus
+  Sur base de l'exemple arduino AnalogInOutSerial
 002-Amesis-Throttle_To_ThrottleBody_Arduino  
 NomDuProjet : Beta_V1.1_Amesis-Throttle_To_ThrottleBody_Arduino 
 Version     : Beta V1.1 30/05/2021
 YouTube     : https://youtu.be/v8cY9vEKRA4
 ButDuProjet : Renvoyer la valeur de la position pédale et position boitier papillon pour faire tourner le papillon (du groupe VAG "VR5 AQN" de 0 à 100 % sur le port serie. Et que le papillon motorisé bouge en fonctione de la position pédal.
-Problème à régler : La papillon oscille très légèrement (non perseptible à l'oeil mais on l'entend) sur la version pecédante il oscillé beaucoup trop, cela été sur au serial.begin trop lent. Je l'ai carrement supprimé pour la V Beta fonctionnelle.
-A ajouter : -La librairie des PID (pour affaiblire l'oscillation)
-            -Trouver le moyen des renvoyer la valeur de position papillon au speeduio car actuellement elle est renvoyé a l'arduino du projet Thottle_To_ThrottleBody et non a l'arduino du Speeduno
-             se problème pourrait être réglé simplement avec le second potentiomettre integré au papillon motorisé inutilisé jusqu'a présent dans le projé.
+Problème à régler : La papillon oscille très légèrement (non perseptible à l'oeil mais on l'entend) sur la version precédante il oscillé beaucoup trop, cela été du au serial.begin trop lent. Je l'ai carrement supprimé pour la V Beta fonctionnelle.
+A ajouter : -La librairie des PID (pour affaiblir l'oscillation)
+            -Trouver le moyen de renvoyer la valeur de position papillon au speeduio car actuellement elle est renvoyé a l'arduino du projet Thottle_To_ThrottleBody et non a l'arduino du Speeduino
+             se problème pourrait être réglé simplement avec le second potentiomettre integré au papillon motorisé inutilisé jusqu'a présent dans le projet.
              cette solution impose 2 arduino, un pour le projet de commande papillon avec la pedale et un avec le Speeduino
 ProjetDisponibleIciGitHub : https://github.com/AmesisProject/002-Amesis-Throttle_To_ThrottleBody_Arduino/tree/main/Throttle%20pedale%20Arduino
-Merci de faire suivre sur github toute modification au amélioration du code et de faire remonter les evantuel problème dans l'ongle "Issues" du projet sur GitHub
+Merci de faire suivre sur github toute modification au amélioration du code et de faire remonter les eventuel problème dans l'onglet "Issues" du projet sur GitHub
 
 Branchement :
  Pedale        /  Calculateur    /   ArduinoMega    
@@ -49,25 +50,25 @@ Branchement :
 //////////////////////////////
 
   //Pedale//
-const int PedalePin = A0;             // Pin analogique d'enté (input) du potentiometre
-      int PedaleNumerique = 0;        // lire la vleur du potentiometre en numerique de 0 à 1023
+const int PedalePin = A0;             // Pin analogique d'entrée (input) du potentiometre
+      int PedaleNumerique = 0;        // lire la valeur du potentiometre en numerique de 0 à 1023
       int PedaleValeur = 0;           // valeur entre 0 et 100% simplement la conversion du 0 à 1023 en 0 à 100%
 
   //Papillon motorisé//    
-const int TpsPin = A1;                // Pin analogique d'enté (input) du potentiometre tps
-      int TpsNumerique = 0;           // lire la vleur du potentiometre en numerique de 0 à 1023
+const int TpsPin = A1;                // Pin analogique d'entrée (input) du potentiometre tps
+      int TpsNumerique = 0;           // lire la valeur du potentiometre en numerique de 0 à 1023
       int TpsValeur = 0;              // valeur entre 0 et 100% convertie depuis la valeur 0 à 1023
 
-  //Pont en H L298N// (Le module L298N est un module de puissance pour allimenter le moteur DC car l'arduino ne fournis pas de puissance mes des commandes)
-      int motorPin1 = 8; //Ports de commande du moteur B sens horaire
-      int motorPin2 = 9; //Ports de commande du moteur B sens trigonometrique
-      //int enablePin = 5; //Ports de commande de la vitesse du moteur
+  //Pont en H L298N//                   (Le module L298N est un module de puissance pour alimenter le moteur DC car l'arduino ne fournis pas de puissance mes des commandes)
+      int motorPin1 = 8;              //Ports de commande du moteur B sens horaire
+      int motorPin2 = 9;              //Ports de commande du moteur B sens trigonometrique
+      //int enablePin = 5;              //Ports de commande de la vitesse du moteur
       
   //Généralité des boucles du code//
       int tempsDelay = 2;             //Pour la stabilité ou la lecture 
       
 ///////////////////////////////
-//Inicialisation du l'arduino//
+//Initialisation du l'arduino//
 ///////////////////////////////
 
 void setup() {
@@ -91,8 +92,8 @@ void loop() {
  //_______________________________________________________________________________________
  //Lecture Pédale
  
-  PedaleNumerique = analogRead(PedalePin);                      // Lecture de la valeur annalogique
-  PedaleValeur = map(PedaleNumerique, 76, 472, 0, 100);         // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeur de ma pédale, il se peut que d'autre pédale et des valeur differente, pour les trouver remplacer les valeur "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouvereai votre propre X et Y 
+  PedaleNumerique = analogRead(PedalePin);                      // Lecture de la valeur analogique
+  PedaleValeur = map(PedaleNumerique, 76, 472, 0, 100);         // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeurs de ma pédale, il se peut que d'autre pédale et des valeurs differentes, pour les trouver remplacer les valeurs "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouverez votre propre X et Y 
   
  // Serial.print("Position de la pedale est à = ");               // On renvoi les info sur le port serie pour la consol arduino
  // Serial.print(PedaleValeur);                                   // Revoie la valeur de la variable sur le port serie
@@ -102,10 +103,10 @@ void loop() {
  //________________________________________________________________________________________
  //Lecture Boitier Papillon
 
-   TpsNumerique = analogRead(TpsPin);                           // Lecture de la valeur annalogiqu
-   TpsValeur = map(TpsNumerique, 100, 937, 0, 100);              // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeur de ma pédale, il se peut que d'autre pédale et des valeur differente, pour les trouver remplacer les valeur "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouvereai votre propre X et Y 
+   TpsNumerique = analogRead(TpsPin);                            // Lecture de la valeur analogique
+   TpsValeur = map(TpsNumerique, 100, 937, 0, 100);              // Fonction "map" de mise à l'echelle : le 70 et 474 sont les valeur de ma pédale, il se peut que d'autre pédale et des valeurs differentes, pour les trouver remplacer les valeurs "PedaleValeur = map(Pedale, X, Y, 0, 100);" X et Y par X = 0 et Y = 1023 et controlez votre debut/fin de course de votre pédale, vous trouverez votre propre X et Y 
 
-  //Serial.print("Position du boitier papillon (TPS) est à = ");  // On renvoi les info sur le port serie pour la consol arduino
+  //Serial.print("Position du boitier papillon (TPS) est à = ");  // On renvoi les info sur le port serie pour la console arduino
   //Serial.print(TpsValeur);                                      // Revoie la valeur de la variable sur le port serie
   //Serial.println("%");                                          // Puis l'unité
  //-----------------------------------------------------------------------------------------
@@ -114,14 +115,14 @@ void loop() {
  //Formule de commande du papillon motorisé en fonction de la position pédal
  
       if ( PedaleValeur > TpsValeur)        //si la valeur de la pedale est superieur à la valeur du potantiometre du papillon motorisé 
-      {                                     //Alor on applique le code de rotation horaire du papillon
+      {                                     //Alors on applique le code de rotation horaire du papillon
         digitalWrite(motorPin1, HIGH);      
         digitalWrite(motorPin2, LOW);
       //  Serial.print("Avant ");
       }
       
       else                                  //Sinon on Stop le moteur (freinage)
-      {                                     //Aplication du code de freinage du moteur
+      {                                     //Application du code de freinage du moteur
         digitalWrite(motorPin1, HIGH); 
         digitalWrite(motorPin2, HIGH);
       // Serial.println("Stop");
@@ -129,5 +130,5 @@ void loop() {
     
     
  //---------------------------------------------------------------------------------------------
- // delay(tempsDelay);                               // On attend un delay en miliseconde pour que notre montage soit stablepour les testes
+ // delay(tempsDelay);                               // On attend un delay en milliseconde pour que notre montage soit stablepour les testes
 }
