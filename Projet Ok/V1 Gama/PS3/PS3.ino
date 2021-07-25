@@ -1,20 +1,20 @@
-
 /* Amesis Project 
-   ^ ^
- =( '' )=
-  (")_(")
+    ^ ^
+  =( '')=
+   (")_(")
 Youtube   : https://www.youtube.com/channel/UCCexVZN3UYSep2lsj2jVjdg?sub_confirmation=1
 GitHub    : https://github.com/AmesisProject
 Discord   : https://discord.gg/vRAybmd3hk
 FaceBook  : https://www.facebook.com/amesis.pro.5
 Instagram : https://www.instagram.com/?hl=fr
-Amesiproject@gmail.com
+Amesisproject@gmail.com
   
-  licence OpenSource non comercialisable, modifiable en citant le propriétaire AmesisProject avec l'un des liens ci dessus
+  licence OpenSource CC-BY-NC-SA 
+  non commercialisable, modifiable en citant le propriétaire AmesisProject avec les liens ci dessus
   Sur base de l'exmple arduino AnalogInOutSerial
 002-Amesis-Throttle_To_ThrottleBody_Arduino  
-NomDuProjet : Beta_V1.2_Amesis-Throttle_To_ThrottleBody_Arduino
-Version     : Beta V1.2 30/05/2021
+NomDuProjet : PS3
+Version     : Gama_V1_PS3 30/05/2021
 ButDuProjet : Renvoyer la valeur de la position pédale et position boitier papillon pour faire tourner le papillon (du groupe VAG "VR5 AQN" de 0 à 100 % sur le port serie. Et que le papillon motorisé bouge en fonctione de la position pédal.
 Problème à régler : La papillon oscille très légèrement (non perseptible à l'oeil mais on l'entend) sur la version pecédante il oscillé beaucoup trop, cela été sur au serial.begin trop lent. Je l'ai carrement supprimé pour la V Beta fonctionnelle.
 A ajouter : -La librairie des PID (pour affaiblire l'oscillation)
@@ -25,7 +25,7 @@ ProjetDisponibleIciGitHub : https://github.com/AmesisProject/002-Amesis-Throttle
 Merci de faire suivre sur github toute modification au amélioration du code et de faire remonter les evantuel problème dans l'ongle "Issues" du projet sur GitHub
 
 Branchement :
- Pedale        /  Calculateur    /   ArduinoMega    
+ Joystick       /  Calculateur    /   ArduinoMega    
  1                 72                 5v
  2                 -                  -               
  3                 -                  -              
