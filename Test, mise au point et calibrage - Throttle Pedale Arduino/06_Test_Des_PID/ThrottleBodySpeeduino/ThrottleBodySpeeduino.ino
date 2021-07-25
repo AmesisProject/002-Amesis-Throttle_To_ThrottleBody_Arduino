@@ -1,8 +1,11 @@
 /*
   Amesis Project & FreakDoctor
-    ^ ^
-  =( '' )=
-   (")_(")
+    ^ ^    		   """"  
+  =( '')=  		   Ø-Ø"
+  ( ")_( ")   	    ""
+                
+   https://github.com/AmesisProject/002-Amesis-Throttle_To_ThrottleBody_Arduino
+   
    
 Youtube   : https://www.youtube.com/channel/UCCexVZN3UYSep2lsj2jVjdg?sub_confirmation=1
 GitHub    : https://github.com/AmesisProject
