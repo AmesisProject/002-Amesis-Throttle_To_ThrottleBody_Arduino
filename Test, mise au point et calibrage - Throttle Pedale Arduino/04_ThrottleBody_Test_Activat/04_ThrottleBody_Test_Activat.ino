@@ -1,3 +1,5 @@
+https://arduino.blaisepascal.fr/pont-en-h-l298n/
+
 // Pont en H L298N
 //Ports de commande du moteur B
 int motorPin1 = 8;
