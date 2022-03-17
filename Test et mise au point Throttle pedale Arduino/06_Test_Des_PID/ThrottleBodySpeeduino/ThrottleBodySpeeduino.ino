@@ -1,3 +1,4 @@
+
 /*
   Amesis Project & FreakDoctor
     ^ ^
@@ -17,9 +18,9 @@
 */
 
 //Pins assignments
-#define pinI1 4
-#define pinI2 5
-#define speedPin 9
+#define pinI1 8
+#define pinI2 9
+#define speedPin 6
 
 //PID Library
 #include <PID_v1.h>
