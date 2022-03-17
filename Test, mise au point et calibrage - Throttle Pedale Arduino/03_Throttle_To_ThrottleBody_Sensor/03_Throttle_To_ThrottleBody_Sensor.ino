@@ -2,12 +2,16 @@
    ^ ^
  =( '' )=
   (")_(")
+  
+  https://github.com/AmesisProject/002-Amesis-Throttle_To_ThrottleBody_Arduino
+  
 Youtube   : https://www.youtube.com/channel/UCCexVZN3UYSep2lsj2jVjdg?sub_confirmation=1
 GitHub    : https://github.com/AmesisProject
 Discord   : https://discord.gg/vRAybmd3hk
 FaceBook  : https://www.facebook.com/amesis.pro.5
 Instagram : https://www.instagram.com/?hl=fr
   
+  licence OpenSource CC-BY-NC-SA 
   licence OpenSource non comercialisable, modifiable en citant le propriétaire AmesisProject avec l'un des liens ci dessus
   Sur base de l'exmple arduino AnalogInOutSerial
 002-Amesis-Throttle_To_ThrottleBody_Arduino  
