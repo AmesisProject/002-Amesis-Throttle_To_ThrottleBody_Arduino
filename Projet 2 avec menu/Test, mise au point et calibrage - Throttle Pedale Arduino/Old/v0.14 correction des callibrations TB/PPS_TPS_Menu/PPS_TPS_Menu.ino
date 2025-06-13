@@ -2,7 +2,7 @@
  *   @brief Interface utilisateur par la commande serie. Pour les groupes de mesures, teste des actionneurs et adaptation.
  *   @file 002-Amesis-Throttle_To_ThrottleBody_Arduino **/
      #define VERSION "0.14"  // Version du programme
- /** @date 04/10/2023
+ /** @date 13/06/2025
  * 
  *   @author Amesis Project
  *   @copyright Amesis Project
