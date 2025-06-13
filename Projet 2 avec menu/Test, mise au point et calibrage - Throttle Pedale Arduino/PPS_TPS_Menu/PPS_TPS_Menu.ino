@@ -436,28 +436,34 @@ void TPS_RotateMotor(char TPSMotorMode) {
 
 void TPS_Calibration() {
  //le mode calibration ne peux s'appliqué que si le moteur et a 0 RPM
- if (1==1){//(currentStatus_RPM  == 0 && currentStatus_battery10 <= 12 && ActiveCalibrateTB == 1 ){ 
+ //if (rpm == 0 et validation user = 1 oui vrai)
+ if (1==1){//(currentStatus_RPM  == 0 && currentStatus_battery10 <= 12 && ActiveCalibrateTB == 1 ){ //Pouquoi pas rajouter 100% PPS1 ou manipe pedale frein+accel pendant x seconde
    //1.Desactiver la pedale
+   //  Je ne sais pas encore si elle est desactiver car nous sommes dans une fonction.
+   //  Il faudrait trouver un moyen de la desactiver le temps du calibrage pour ne pas fausser la valeur si l'utilisateur touche la pedale.
+   //  Securité coupure injection et allumage
    ActiveCalibrateTB = 1;  // Active le mode calibration
 
    //2.Clignotement de la led Mile pour indiquer le début de la calibration
-   IndicatorLightMil(LedMil_DoubleBlink);
+   IndicatorLightMil(LedMil_DoubleBlink); // Appel de la fonction du voyant MIL 5 chois : (LedMil_Off) (LedMil_On) (LedMil_BlinkLong) (LedMil_BlinkShort) (LedMil_DoubleBlink)
 
    //3.On remet toutes les variables à zero
    TPS1_Calib_Mini = 1023;
    TPS2_Calib_Mini = 1023;
    TPS1_Calib_Maxi = 0;
    TPS2_Calib_Maxi = 0;
+   TPS1_Calib_Neutral = 0;
+   TPS2_Calib_Neutral = 0;
    
    Serial.println("Starting TB calibration...");
-   Serial.println("Phase 1: Closing throttle...");
    
+   //Le while pose problem avec TunerStudio, dans le FW Speeduino ça coupe la communication.
    //4. On relève la valeur du TPS1 & TPS2 au Mini         
    unsigned long currentMillis = millis();  
    while (millis() - currentMillis < 2000) {  // pendant 2s
       TPS_RotateMotor(Close);  // On ferme le papillon
-      TPSPot1_ADC = analogRead(TPSPot1_Pin);
-      TPSPot2_ADC = analogRead(TPSPot2_Pin);
+      TPSPot1_ADC = analogRead(TPSPot1_Pin); //On lis les données du capteur PPS Pot1
+      TPSPot2_ADC = analogRead(TPSPot2_Pin); //On lis les données du capteur PPS Pot2
       
       // Mise à jour des valeurs minimales
       if(TPSPot1_ADC < TPS1_Calib_Mini) {
@@ -467,19 +473,17 @@ void TPS_Calibration() {
         TPS2_Calib_Mini = TPSPot2_ADC;
       }
       
-      Serial.print("TPS1 Min: "); Serial.print(TPS1_Calib_Mini);
-      Serial.print(" TPS2 Min: "); Serial.println(TPS2_Calib_Mini);
+      Serial.println("\rPhase 1: Closing throttle : TPS1 Min: " + String(TPS1_Calib_Mini) + " TPS2 Min: " + String(TPS2_Calib_Mini) + "      ");
       delay(100);  // Petit délai pour ne pas surcharger le port série
    }
-
-   Serial.println("Phase 2: Opening throttle...");
+   Serial.println(); // Pour passer à la ligne après la phase 1
    
    //5. On relève la valeur du TPS1 & TPS2 au Maxi
    currentMillis = millis(); 
    while (millis() - currentMillis < 2000) {  // pendant 2s
       TPS_RotateMotor(Open);  // On ouvre le papillon
-      TPSPot1_ADC = analogRead(TPSPot1_Pin);
-      TPSPot2_ADC = analogRead(TPSPot2_Pin);
+      TPSPot1_ADC = analogRead(TPSPot1_Pin); //On lis les données du capteur PPS Pot1
+      TPSPot2_ADC = analogRead(TPSPot2_Pin); //On lis les données du capteur PPS Pot2
       
       // Mise à jour des valeurs maximales
       if(TPSPot1_ADC > TPS1_Calib_Maxi) {
@@ -489,26 +493,40 @@ void TPS_Calibration() {
         TPS2_Calib_Maxi = TPSPot2_ADC;
       }
       
-      Serial.print("TPS1 Max: "); Serial.print(TPS1_Calib_Maxi);
-      Serial.print(" TPS2 Max: "); Serial.println(TPS2_Calib_Maxi);
+      Serial.println("\rPhase 2: Opening throttle : TPS1 Max: " + String(TPS1_Calib_Maxi) + " TPS2 Max: " + String(TPS2_Calib_Maxi) + "      ");
       delay(100);
    }
-
-   //6. Retour à la position neutre
-   TPS_RotateMotor(Freewheel);
+   Serial.println(); // Pour passer à la ligne après la phase 2
+   
+   //6. On relève la valeur du TPS1 & TPS2 au Neutral
+   currentMillis = millis(); 
+   while (millis() - currentMillis < 2000) {  // pendant 2s
+      TPS_RotateMotor(Freewheel);  // Position neutre
+      TPSPot1_ADC = analogRead(TPSPot1_Pin); //On lis les données du capteur PPS Pot1
+      TPSPot2_ADC = analogRead(TPSPot2_Pin);  //On lis les données du capteur PPS Pot2
+      
+      // Mise à jour des valeurs neutres (on prend la moyenne sur la période)
+      TPS1_Calib_Neutral = TPSPot1_ADC;
+      TPS2_Calib_Neutral = TPSPot2_ADC;
+      
+      Serial.println("\rPhase 3: Finding neutral : TPS1 Neutral: " + String(TPS1_Calib_Neutral) + " TPS2 Neutral: " + String(TPS2_Calib_Neutral) + "      ");
+      delay(100);
+   }
+   Serial.println(); // Pour passer à la ligne après la phase 3
    
    //7. Affichage des résultats
    Serial.println("\nCalibration Results:");
-   Serial.println("TPS1 - Min: " + String(TPS1_Calib_Mini) + " Max: " + String(TPS1_Calib_Maxi));
-   Serial.println("TPS2 - Min: " + String(TPS2_Calib_Mini) + " Max: " + String(TPS2_Calib_Maxi));
+   Serial.println("TPS1 - Min: " + String(TPS1_Calib_Mini) + " Neutral: " + String(TPS1_Calib_Neutral) + " Max: " + String(TPS1_Calib_Maxi));
+   Serial.println("TPS2 - Min: " + String(TPS2_Calib_Mini) + " Neutral: " + String(TPS2_Calib_Neutral) + " Max: " + String(TPS2_Calib_Maxi));
 
    //8. Fin de la calibration
-   IndicatorLightMil(LedMil_Off);
-   ActiveCalibrateTB = 0;
+   IndicatorLightMil(LedMil_Off); //6. Fin du calibrage on éteint le voyant MIL
+   ActiveCalibrateTB = 0;  //On rebascule à 0 pour la condition de l'utilisateur
    Serial.println("Calibration completed!");
   }
   else {
      Serial.println("Engine must be off and battery voltage > 12V");
+  //  Serial.println ("Veuillez couper le moteur ou veriviez que la batterie soit au minimum de 12v ");
   }
 }
 
@@ -947,7 +965,7 @@ void afficherSousMenu(String menu) {
   //!1.2   
   else if (menu == MENU_PAPILLON)       {
     Serial.println("\n//" + niveauMenu + " Throttle Body// ");
-    Serial.println("1) Read " + String(TPS1_Calib_Mini) + " " + String(TPS1_Calib_Maxi));  // Suppression de TPS1_Calib_Neutral
+    Serial.println("1) Read Close:" + String(TPS1_Calib_Mini) + " / Neutral:" + String(TPS1_Calib_Neutral) + " / Open:" + String(TPS1_Calib_Maxi));
     Serial.println("2) Calibration");
     Serial.println("3) Save");
     Serial.println("");
