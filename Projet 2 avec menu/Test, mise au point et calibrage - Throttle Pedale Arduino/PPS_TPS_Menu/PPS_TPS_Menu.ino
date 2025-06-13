@@ -1,11 +1,11 @@
 /**
- * @brief Interface utilisateur par la commande serie. Pour les groupes de mesures, teste des actionneurs et adaptation.
- * @file 002-Amesis-Throttle_To_ThrottleBody_Arduino 
- * @version 0.12
- * @date 04/10/2023
+ *   @brief Interface utilisateur par la commande serie. Pour les groupes de mesures, teste des actionneurs et adaptation.
+ *   @file 002-Amesis-Throttle_To_ThrottleBody_Arduino **/
+     #define VERSION "0.13"  // Version du programme
+ /** @date 04/10/2023
  * 
- * @author Amesis Project
- * @copyright Amesis Project
+ *   @author Amesis Project
+ *   @copyright Amesis Project
  * 
 *    ^ ^
 *  =( '')=
@@ -436,75 +436,81 @@ void TPS_RotateMotor(char TPSMotorMode) {
 
 void TPS_Calibration() {
  //le mode calibration ne peux s'appliqué que si le moteur et a 0 RPM
- //if (rpm == 0 et validation user = 1 oui vrai)
- if (1==1){//(currentStatus_RPM  == 0 && currentStatus_battery10 <= 12 && ActiveCalibrateTB == 1 ){ //Pouquoi pas rajouter 100% PPS1 ou manipe pedale frein+accel pendant x seconde
+ if (1==1){//(currentStatus_RPM  == 0 && currentStatus_battery10 <= 12 && ActiveCalibrateTB == 1 ){ 
    //1.Desactiver la pedale
-   //  Je ne sais pas encore si elle est desactiver car nous sommes dans une fonction.
-   //  Il faudrait trouver un moyen de la desactiver le temps du calibrage pour ne pas fausser la valeur si l'utilisateur touche la pedale.
-   //  Securité coupure injection et allumage
+   ActiveCalibrateTB = 1;  // Active le mode calibration
 
-   //2.Clignotement de la led Mile
-   IndicatorLightMil(LedMil_DoubleBlink); // Appel de la fonction du voyant MIL 5 chois : (LedMil_Off) (LedMil_On) (LedMil_BlinkLong) (LedMil_BlinkShort) (LedMil_DoubleBlink)
+   //2.Clignotement de la led Mile pour indiquer le début de la calibration
+   IndicatorLightMil(LedMil_DoubleBlink);
 
-   //3.On remet toutes les variable à zero
-   TPS1_Calib_Mini = 1023 ;
-   TPS2_Calib_Mini = 1023 ;
-   TPS1_Calib_Maxi = 0 ;
-   TPS2_Calib_Maxi = 0 ;
-   TPS1_Calib_Neutral = 0 ;
-   TPS2_Calib_Neutral = 0 ;
+   //3.On remet toutes les variables à zero
+   TPS1_Calib_Mini = 1023;
+   TPS2_Calib_Mini = 1023;
+   TPS1_Calib_Maxi = 0;
+   TPS2_Calib_Maxi = 0;
    
+   Serial.println("Starting TB calibration...");
+   Serial.println("Phase 1: Closing throttle...");
    
-   //Le while pose problem avec TunerStudio, dans le FW Speeduino ça coupe la communication.
-   //3. On relève la valeur du TPS1 & TPS2 au Mini         
+   //4. On relève la valeur du TPS1 & TPS2 au Mini         
    unsigned long currentMillis = millis();  
+   while (millis() - currentMillis < 2000) {  // pendant 2s
+      TPS_RotateMotor(Close);  // On ferme le papillon
+      TPSPot1_ADC = analogRead(TPSPot1_Pin);
+      TPSPot2_ADC = analogRead(TPSPot2_Pin);
+      
+      // Mise à jour des valeurs minimales
+      if(TPSPot1_ADC < TPS1_Calib_Mini) {
+        TPS1_Calib_Mini = TPSPot1_ADC;
+      }
+      if(TPSPot2_ADC < TPS2_Calib_Mini) {
+        TPS2_Calib_Mini = TPSPot2_ADC;
+      }
+      
+      Serial.print("TPS1 Min: "); Serial.print(TPS1_Calib_Mini);
+      Serial.print(" TPS2 Min: "); Serial.println(TPS2_Calib_Mini);
+      delay(100);  // Petit délai pour ne pas surcharger le port série
+   }
 
-   while (millis() - currentMillis < 2000) {       // pendant 2s
-      TPS_RotateMotor(Close);                          // Close On ferme le papillon
-      TPSPot1_ADC = analogRead(TPSPot1_Pin); //On lis les données du capteur PPS Pot1
-       if(TPSPot1_ADC < TPS1_Calib_Mini) {
-          TPS1_Calib_Mini = TPSPot1_ADC ;
-        }
-      TPSPot2_ADC =analogRead(TPSPot2_Pin);  //On lis les données du capteur PPS Pot2
-       if(TPSPot2_ADC < TPS2_Calib_Mini) {
-          TPS2_Calib_Mini = TPSPot2_ADC ;
-        } 
-    }
+   Serial.println("Phase 2: Opening throttle...");
+   
+   //5. On relève la valeur du TPS1 & TPS2 au Maxi
+   currentMillis = millis(); 
+   while (millis() - currentMillis < 2000) {  // pendant 2s
+      TPS_RotateMotor(Open);  // On ouvre le papillon
+      TPSPot1_ADC = analogRead(TPSPot1_Pin);
+      TPSPot2_ADC = analogRead(TPSPot2_Pin);
+      
+      // Mise à jour des valeurs maximales
+      if(TPSPot1_ADC > TPS1_Calib_Maxi) {
+        TPS1_Calib_Maxi = TPSPot1_ADC;
+      }
+      if(TPSPot2_ADC > TPS2_Calib_Maxi) {
+        TPS2_Calib_Maxi = TPSPot2_ADC;
+      }
+      
+      Serial.print("TPS1 Max: "); Serial.print(TPS1_Calib_Maxi);
+      Serial.print(" TPS2 Max: "); Serial.println(TPS2_Calib_Maxi);
+      delay(100);
+   }
 
-     //4. On relève la valeur du TPS1 & TPS2 au Maxi
-     currentMillis = millis(); 
-   while (millis() - currentMillis < 2000) {       //pendant 2s
-      TPS_RotateMotor(Open);                          //Open On Ouvre le papillon
-      TPSPot1_ADC = analogRead(TPSPot1_Pin);       //On lis les données du capteur PPS Pot1
-       if(TPSPot1_ADC > TPS1_Calib_Maxi) {
-          TPS1_Calib_Maxi = TPSPot1_ADC ;
-        }
-      TPSPot2_ADC =analogRead(TPSPot2_Pin); //On lis les données du capteur PPS Pot2
-       if(TPSPot2_ADC > TPS2_Calib_Maxi) {
-          TPS2_Calib_Maxi = TPSPot2_ADC ;
-        } 
-    }
-     //5. On relève la valeur du TPS1 & TPS2 au N Neutral
-     currentMillis = millis(); 
-   while (millis() - currentMillis < 2000) {         //Attendre 2s
-      TPS_RotateMotor(Freewheel);                            //Freewheel : //Moteur en roue libre ( à l'arrêt, sans frein)
-          TPS1_Calib_Neutral = TPSPot1_ADC ;
-          TPS2_Calib_Neutral = TPSPot2_ADC ;
-        }
-         
-     //Save dans l'EEPROM
-     Serial.println ("TB calibrated") ;
-     //Serial.println( "TB calibré. ") ;
+   //6. Retour à la position neutre
+   TPS_RotateMotor(Freewheel);
+   
+   //7. Affichage des résultats
+   Serial.println("\nCalibration Results:");
+   Serial.println("TPS1 - Min: " + String(TPS1_Calib_Mini) + " Max: " + String(TPS1_Calib_Maxi));
+   Serial.println("TPS2 - Min: " + String(TPS2_Calib_Mini) + " Max: " + String(TPS2_Calib_Maxi));
 
-     IndicatorLightMil(LedMil_Off) ; //6. Fin du calibrage on éteint le voyant MIL
-     ActiveCalibrateTB = 0 ; //On rebascule à 0 pour la condition de l'utilisateur
+   //8. Fin de la calibration
+   IndicatorLightMil(LedMil_Off);
+   ActiveCalibrateTB = 0;
+   Serial.println("Calibration completed!");
   }
-
   else {
-     Serial.println ("Engine off & bat >12v");
-  //   Serial.println ("Veuillez couper le moteur ou veriviez que la batterie soit au minimum de 12v ");
-    }
-} 
+     Serial.println("Engine must be off and battery voltage > 12V");
+  }
+}
 
 void TB_Test() {
  //le mode test ne peux s'appliqué que si le moteur et a 0 RPM
@@ -847,20 +853,20 @@ void Page() { //TO DO
 
 // Fonctions pour l'interce utilisateur
 void afficherMenuPrincipal() { //Le menu principale comporte 14 lignes, pour garder cette resolution, il y a des Serial.prinrln ("") dans chaque menu pour compbler jusqu'a 14 Lignes, pour un affichage propre du=es menus.
-  Serial.println("\n//" + niveauMenu + " Setting// ");  // 1
-  Serial.println(" 1) PPS");                            // 2
-  Serial.println(" 2) TB");                             // 3
-  Serial.println(" 3) PWM TB");                         // 4
-  Serial.println(" 4) Hz TB");                          // 5
-  Serial.println(" 5) PID ");                           // 6
-  Serial.println(" 6) Acquisition");                    // 7
-  Serial.println(" 7) DTC");                            // 8
-  Serial.println(" 8)    ^ ^");                        // 9
-  Serial.println(" 9)  =( '')=");                      //10
-  Serial.println("10) ('')_('')");                     //11
-  Serial.println("By AmesisProject TB V0.09");          //12
-  Serial.println("...................");                //13
-  Serial.println(" Enter a number :");                  //14
+  Serial.println("\n//" + niveauMenu + " Setting// ");         // 1
+  Serial.println(" 1) PPS");                                   // 2
+  Serial.println(" 2) TB");                                    // 3
+  Serial.println(" 3) PWM TB");                                // 4
+  Serial.println(" 4) Hz TB");                                 // 5
+  Serial.println(" 5) PID ");                                  // 6
+  Serial.println(" 6) Acquisition");                           // 7
+  Serial.println(" 7) DTC");                                   // 8
+  Serial.println(" 8)    ^ ^");                                // 9
+  Serial.println(" 9)  =( '')=");                              //10
+  Serial.println("10) ('')_('')");                             //11
+  Serial.println("By AmesisProject TB V" + String(VERSION));   //12 Ici on affiche la version du programme 
+  Serial.println("...................");                       //13
+  Serial.println(" Enter a number :");                         //14
 
 
 }
@@ -941,7 +947,7 @@ void afficherSousMenu(String menu) {
   //!1.2   
   else if (menu == MENU_PAPILLON)       {
     Serial.println("\n//" + niveauMenu + " Throttle Body// ");
-    Serial.println("1) Read " + String(TPS1_Calib_Mini) + " " + String(TPS1_Calib_Neutral) + " " + String(TPS1_Calib_Maxi));
+    Serial.println("1) Read " + String(TPS1_Calib_Mini) + " " + String(TPS1_Calib_Maxi));  // Suppression de TPS1_Calib_Neutral
     Serial.println("2) Calibration");
     Serial.println("3) Save");
     Serial.println("");
