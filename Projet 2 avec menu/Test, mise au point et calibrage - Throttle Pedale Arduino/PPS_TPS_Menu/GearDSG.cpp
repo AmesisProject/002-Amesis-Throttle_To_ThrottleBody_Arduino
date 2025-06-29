@@ -1,4 +1,8 @@
 #include "GearDSG.h"
+extern unsigned long DSG_Duration;
+extern bool dsgActive;
+extern unsigned long dsgStartTime;
+extern bool dsgUp;
 
 // ===============================
 // Module de gestion du mode DSG
@@ -10,19 +14,14 @@
 // GearDSG_Loop() doit être appelée régulièrement (dans loop())
 // GearDSG_IsActive() permet de savoir si une séquence DSG est en cours
 
-// Variables internes au module
-static bool dsgActive = false;           // Indique si une séquence DSG est en cours
-static unsigned long dsgStartTime = 0;   // Mémorise le début de la séquence
-static unsigned long dsgDuration = 300;  // Durée en ms de la séquence DSG (à ajuster selon besoin)
-static bool dsgUp = true;                // true = passage supérieur, false = rétrogradage
-
 /**
  * @brief Initialise le module DSG (remise à zéro des variables)
  */
 void GearDSG_Init() {
-    dsgActive = false;
-    dsgStartTime = 0;
-    dsgUp = true;
+    // Variables internes au module
+    // static bool dsgActive = false;           // Indique si une séquence DSG est en cours
+    // static unsigned long dsgStartTime = 0;   // Mémorise le début de la séquence
+    // static bool dsgUp = true;                // true = passage supérieur, false = rétrogradage
 }
 
 /**
@@ -31,9 +30,13 @@ void GearDSG_Init() {
  *        Quand la durée est écoulée, remet le papillon en mode normal.
  */
 void GearDSG_Loop() {
+    // Variables internes au module
+    // static bool dsgActive = false;           // Indique si une séquence DSG est en cours
+    // static unsigned long dsgStartTime = 0;   // Mémorise le début de la séquence
+    // static bool dsgUp = true;                // true = passage supérieur, false = rétrogradage
     if (dsgActive) {
         // Pendant la séquence DSG, on agit sur le papillon
-        if (millis() - dsgStartTime < dsgDuration) {
+        if (millis() - dsgStartTime < DSG_Duration) {
             if (dsgUp) {
                 // Passage supérieur : ouvrir le papillon (adapter selon ton besoin)
                 // TPS_RotateMotor(Open);
@@ -74,4 +77,12 @@ void GearDSG_Trigger(bool gearUp) {
  */
 bool GearDSG_IsActive() {
     return dsgActive;
+}
+
+unsigned long GearDSG_GetDuration() {
+    return DSG_Duration;
+}
+
+void GearDSG_SetDuration(unsigned long duration) {
+    DSG_Duration = duration;
 } 

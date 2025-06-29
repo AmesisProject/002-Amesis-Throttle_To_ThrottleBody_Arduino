@@ -43,6 +43,7 @@ extern int Cruise_Up;
 extern int Cruise_Down;
 extern int Cruise_Cancel;
 
+
 // Fonctions externes
 extern void ReadSensor();
 extern void PPS_Calibration();
@@ -152,6 +153,10 @@ void getNewPIDValue(String paramName, double &param);
  */
 void printEmptyLines(int count);
 
-extern int DSG_Duree;
+extern unsigned long DSG_Duration;
+
+extern bool dsgActive;
+extern unsigned long dsgStartTime;
+extern bool dsgUp;
 
 #endif 

@@ -1,7 +1,7 @@
 /**
  *   @brief Interface utilisateur par la commande serie. Pour les groupes de mesures, teste des actionneurs et adaptation.
  *   @file 002-Amesis-Throttle_To_ThrottleBody_Arduino **/
-const char* VERSION = "0.16";  // Version du programme
+const char* VERSION = "0.17";  // Version du programme
  /** @date 29/06/2025
  * 
  *   @author Amesis Project
@@ -26,7 +26,21 @@ const char* VERSION = "0.16";  // Version du programme
 *ButDuProjet : Renvoyer la valeur de la pédale et du boitier papillon (du groupe VAG "VR5 AQN" de 0 à 100 % sur le port serie. Et que le papillon motorisé bouge en fonctione de la position pédal.
 *ProjetDisponibleIciGitHub : https://github.com/AmesisProject/002-Amesis-Throttle_To_ThrottleBody_Arduino/tree/main/Throttle%20pedale%20Arduino
 *Merci de faire suivre sur github toute modification au amélioration du code.
+
+*---------------------------------------------------------
 *Branchement :
+* JoyStick Shield ArduinoMegapour les testes : 
+* Boutton A     : D2 
+* Boutton B     : D3
+* Boutton C     : D4
+* Boutton D     : D5
+* Boutton E     : D6
+* Boutton F     : D7
+* Joy  ⬍  X     : A0 
+* Joy ⬌  Y     : A1
+* Joy Boutton Z : D8
+* -------------------------------------------------------------
+
 * Pedale        /  Calculateur ME7.1   /   ArduinoMega    
 * 1                 72                 5v
 * 2                 -                  -               
@@ -34,7 +48,8 @@ const char* VERSION = "0.16";  // Version du programme
 * 4                 -                  -               
 * 5                 33                 Gnd
 * 6                 34                 A0
-*
+*--------------------------------------------------------------
+
 * ThrottleBody   /  Calculateur   /   ArduinoMega    
 * 1                  -                 -
 * 2                  83                Gnd               
@@ -42,7 +57,7 @@ const char* VERSION = "0.16";  // Version du programme
 * 4                  84                A1               
 * 5                  -                 -
 * 6                  91                +5V
-*
+*---------------------------------------------------------------
 */
 /////////////
 //Librairie//
@@ -63,14 +78,14 @@ void TB_LoadStatus();
 //////////////////////////////
 
 //Pedale electronique acceleration//
-  #define  PPSPot1_Pin 4           // Pin analogique d'entré (input) du potentiometre PPS1
+  #define  PPSPot1_Pin A1           // Pin analogique d'entré (input) du potentiometre PPS1
       int  PPSPot1_ADC = 0;         // lire la vleur du potentiometre en numerique de 0 à 1023 PPS1
       int  PPS1_Calib_Mini = 166;   // Valeur de calibrage Mini capteur pedale 1
       int  PPS1_Calib_Maxi = 953;   // Valeur de calibrage Maxi capteur pedale 1   
       int  PPS1_Position = 0;       // Valeur entre 0 et 100% convertie depuis la valeur 0 à 1023
       bool PPS1_LoHi = 0;           // Pour inverser la polarité de PPS1
 
-  #define  PPSPot2_Pin 3         // Pin analogique d'enté (input) du potentiometre
+  #define  PPSPot2_Pin A3         // Pin analogique d'enté (input) du potentiometre
       int  PPSPot2_ADC = 0;         // lire la vleur du potentiometre en numerique de 0 à 1023
       int  PPS2_Calib_Mini = 140;   // Valeur de calibrage Mini capteur pedale 2
       int  PPS2_Calib_Maxi = 998;   // Valeur de calibrage Maxi capteur pedale 2
@@ -83,13 +98,13 @@ void TB_LoadStatus();
       int  PPS_Position ;           // Valeur en % de la position de la moyenne de PPS1 et PPS2
 
 //Pedale de frein //
-  #define PBrake_Pin A2             // Pin d'entré du bouton poisoir de la pedale de frein, peut être un potantiometre sur certin model
+  #define PBrake_Pin 3             // Pin d'entré du bouton poisoir de la pedale de frein, peut être un potantiometre sur certin model
       int PBrake_Stat = 0 ;         // Valeur de l'état du boutton pousoir, la valeur pourra être ressue soit de la pin soit du CAN
       bool PBrake_LoHi = 0 ;        // Pour inverser la polarité de PBrake
 
 //Pédale d'embrayage //
 
-  #define PClutch_Pin A3            // Pin d'entré du bouton poisoir de la pedale d'embrayage, peut être un potantiometre sur certin model
+  #define PClutch_Pin 2            // Pin d'entré du bouton poisoir de la pedale d'embrayage, peut être un potantiometre sur certin model
       int PClutch_Stat = 0 ;        // Valeur de l'état du boutton pousoir, la valeur pourra être ressue soit de la pin soit du CAN
       bool PClutch_LoHi = 0 ;       // Pour inverser la polarité de PClutch
 
@@ -102,8 +117,8 @@ void TB_LoadStatus();
       int TPS1_Position = 0;        // valeur entre 0 et 100% convertie depuis la valeur 0 à 1023
       bool TPS1_LoHi = 0;           // Pour inverser la poliarité de TPS1
 
-   #define TPSPot2_Pin A1           // Pin analogique d'enté (input) du potentiometre tps
-      int  TPSPot2_ADC = 0;         // lire la vleur du potentiometre en numerique de 0 à 1023
+   #define TPSPot2_Pin A2           // Pin analogique d'enté (input) du potentiometre TPS2
+      int  TPSPot2_ADC = 0;         // lire la vleur du potentiometre en numerique de 0 à 1023 TPS2
       int  TPS2_Calib_Mini = 0;     // Valeur de calibrage Mini capteur TB 2
       int  TPS2_Calib_Neutral = 2;  // Valeur de calibraga Neutre capteur TP2 (papillon au repos)
       int  TPS2_Calib_Maxi = 100;   // Valeur de calibrage Maxi capteur TB 2
@@ -157,6 +172,13 @@ void TB_LoadStatus();
       int Cruise_Down = 0 ;
       int Cruise_Cancel = 0 ;
 
+//Variable pour le mode Boite de vitesse DSG
+int DSG_Mode = 0; // Mode par défaut pour le mode DSG
+unsigned long dsgStartTime = 0;   // Mémorise le début de la séquence
+unsigned long DSG_Duration = 300; // Durée par défaut en ms pour la séquence DSG
+bool dsgActive = false;           // Indique si une séquence DSG est en cours
+bool dsgUp = true;                // true = passage supérieur, false = rétrogradage
+
 //Variable pour le Voyant MIL (merci Chat GPT lol pour le code du MIL)  
 const int LedMil_Pin = 13 ;                  //Pin de la Led du Voyant MIL (voyant DTC)
       unsigned long Mil_previousMillis = 0;  //Pour le système millis pour eviter que le code soit bloquant par le "delay"
@@ -194,51 +216,11 @@ enum TPSMotor {
       int currentStatus_kmh ;            // Valeur de vitesse vehicule pour le regulateur de vitesse
          
 
-//Interface Utilisateur par le liaison serie          
-  // Définir les numéros de menu
-     // #define MENU_PRINCIPAL                "1"      // 1
-     // #define MENU_PEDALE                   "1.1"    //  1.1
-     // #define MENU_PPS_LOG                  "1.1.1"  //    1.1.1
-     // #define MENU_PPS_Calibration          "1.1.2"  //    1.1.2
-     // #define MENU_PPS_SaveEEPROM           "1.1.3"  //    1.1.3
-     // #define MENU_PAPILLON                 "1.2"    //  1.2
-     // #define MENU_TPS_LOG                  "1.2.1"  //    1.2.1
-     // #define MENU_TPS_Calibration          "1.2.2"  //    1.2.2
-     // #define MENU_TPS_SaveEEPROM           "1.2.3"  //    1.2.3
-     // #define MENU_REGLAGE_PWM              "1.3"    //  1.3
-     // #define MENU_REGLAGE_FREQUENCE        "1.4"    //  1.4
-     // #define MENU_REGLAGE_PID              "1.5"    //  1.5
-     // #define MENU_PID_Normal               "1.5.1"  //    1.5.1
-     // #define MENU_PID_KP                   "1.5.1.1"//        1.5.1.1
-     // #define MENU_PID_KI                   "1.5.1.2"//        1.5.1.2
-     // #define MENU_PID_KD                   "1.5.1.3"//        1.5.1.3
-     // #define MENU_PID_Agressif             "1.5.2"  //    1.5.2
-     // #define MENU_PID_KP_Agr               "1.5.2.1"//        1.5.2.1
-     // #define MENU_PID_KI_Agr               "1.5.2.2"//        1.5.2.2
-     // #define MENU_PID_KD_Agr               "1.5.2.3"//        1.5.2.3
-     // #define MENU_PID_Auto                 "1.5.3"  //    1.5.3
-     // #define MENU_ACQUISITION              "1.6"    //  1.6
-     // #define MENU_LOG_Capteurs             "1.6.1"  //    1.6.1
-     // #define MENU_LOG_Capteur_PPS_TPS      "1.6.1.1"//        1.6.1.1  
-     // #define MENU_LOG_Capteur_Cruise       "1.6.1.2"//        1.6.1.2
-     // #define MENU_TEST_Actionneurs         "1.6.2"  //    1.6.2
-     // #define MENU_TEST_Actionneurs_MIL     "1.6.2.1"//        1.6.2.1
-     // #define MENU_TEST_Actionneurs_TB      "1.6.2.2"//        1.6.2.2
-     // #define MENU_RESEAU_CAN               "1.6.3"  //    1.6.3
-     // #define MENU_DTC                      "1.7"    //  1.7
-     // #define MENU_LIBRE_1                  "1.8"    //  1.8
-     // #define MENU_LIBRE_2                  "1.9"    //  1.9
-     // #define MENU_LIBRE_3                  "1.10"   //  1.10
-     // #define MENU_RETOUR                   "11"     //11
 
-  // Variable pour stocker le numéro de menu actuel
-     // String niveauMenu = MENU_PRINCIPAL;
-  // Variable pour les charactaires
-   // String Quit = "Q) Quit";
-   // String CurrentValue = "Current value : ";
+
      
 
-int DSG_Duree = 300; // Durée par défaut en ms pour la séquence DSG
+
 
 ///////////////////////////////
 //Inicialisation de l'arduino//
@@ -631,7 +613,13 @@ void TB_Setting () {
     //PPS1_Calib_Mini
     //PPS1_Calib_Maxi 
     //PPS2_Calib_Mini
-    //PPS2_Calib_Maxi
+    //PPS2_Calib_Maxi 
+    //
+  //Calibration du papillon electronique
+    //TPS1_Calib_Mini
+    //TPS1_Calib_Maxi 
+    //TPS2_Calib_Mini
+    //TPS2_Calib_Maxi
 
 }
 

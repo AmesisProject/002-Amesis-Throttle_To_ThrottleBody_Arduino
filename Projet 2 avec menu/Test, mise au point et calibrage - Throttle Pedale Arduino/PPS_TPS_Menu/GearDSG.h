@@ -26,4 +26,14 @@ void GearDSG_Trigger(bool gearUp);
  */
 bool GearDSG_IsActive();
 
+/**
+ * @brief Récupère la durée actuelle de la séquence DSG (en ms)
+ */
+unsigned long GearDSG_GetDuration();
+
+/**
+ * @brief Définit la durée de la séquence DSG (en ms)
+ */
+void GearDSG_SetDuration(unsigned long duration);
+
 #endif // GEAR_DSG_H 

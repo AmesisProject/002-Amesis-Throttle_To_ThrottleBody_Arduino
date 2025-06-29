@@ -468,7 +468,7 @@ void afficherSousMenu(String menu) {
        //!1.6.3.2
        else if (menu == MENU_DSG_Duree) {
            Serial.println("\n//" + niveauMenu + " Durée séquence DSG// ");
-           Serial.println("Durée actuelle : " + String(dsgDuration) + " ms");
+           Serial.println("Durée actuelle : " + String(DSG_Duration) + " ms");
            Serial.println("1) Modiffier durée"); //Finir le code pour remplacer la variable de durée
            Serial.println("");
            Serial.println("");
