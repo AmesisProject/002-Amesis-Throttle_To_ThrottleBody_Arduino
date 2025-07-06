@@ -1,0 +1,165 @@
+// ============================================================================
+// INTÉGRATION DES COMMANDES SAVE EEPROM DANS LE MENU
+// ============================================================================
+// À ajouter dans le fichier Menu.cpp
+
+// ============================================================================
+// 1. MENU PPS (1.1) - Sauvegarde PPS
+// ============================================================================
+// Dans la fonction gererMenu(), section MENU_PPS_SaveEEPROM :
+
+else if (menu == MENU_PPS_SaveEEPROM) {
+  SaveEEPROM_PPS();  // Sauvegarde uniquement les valeurs PPS
+  Serial.println("Calibration PPS sauvegardee en EEPROM");
+}
+
+// ============================================================================
+// 2. MENU TPS (1.2) - Sauvegarde TPS
+// ============================================================================
+// Dans la fonction gererMenu(), section MENU_TPS_SaveEEPROM :
+
+else if (menu == MENU_TPS_SaveEEPROM) {
+  SaveEEPROM_TPS();  // Sauvegarde uniquement les valeurs TPS
+  Serial.println("Calibration TPS sauvegardee en EEPROM");
+}
+
+// ============================================================================
+// 3. MENU PWM (1.3) - Sauvegarde PWM
+// ============================================================================
+// Ajouter dans handlePWMMenu() :
+
+void handlePWMMenu(String option) {
+  if (option == "save") {
+    SaveEEPROM_PWM();
+    Serial.println("Parametres PWM sauvegardes en EEPROM");
+  }
+  // ... autres options PWM existantes
+}
+
+// ============================================================================
+// 4. MENU FRÉQUENCE (1.4) - Sauvegarde Fréquence
+// ============================================================================
+// Ajouter dans handleFrequencyMenu() :
+
+void handleFrequencyMenu(String option) {
+  if (option == "save") {
+    SaveEEPROM_Frequency();
+    Serial.println("Frequence TPS sauvegardee en EEPROM");
+  }
+  // ... autres options fréquence existantes
+}
+
+// ============================================================================
+// 5. MENU PID NORMAL (1.5.1) - Sauvegarde PID Normal
+// ============================================================================
+// Ajouter dans handleNormalPIDMenu() :
+
+void handleNormalPIDMenu(String option) {
+  if (option == "save") {
+    SaveEEPROM_PID_Normal();
+    throttlePID.SetTunings(kP, kI, kD);  // Mettre à jour l'objet PID
+    Serial.println("Parametres PID Normal sauvegardes en EEPROM");
+  }
+  // ... autres options PID normal existantes
+}
+
+// ============================================================================
+// 6. MENU PID AGRESSIF (1.5.2) - Sauvegarde PID Agressif
+// ============================================================================
+// Ajouter dans handleAgressifPIDMenu() :
+
+void handleAgressifPIDMenu(String option) {
+  if (option == "save") {
+    SaveEEPROM_PID_Agressif();
+    Serial.println("Parametres PID Agressif sauvegardes en EEPROM");
+  }
+  // ... autres options PID agressif existantes
+}
+
+// ============================================================================
+// 7. MENU DSG (1.6.3) - Sauvegarde DSG
+// ============================================================================
+// Ajouter dans la gestion du menu DSG :
+
+else if (menu == MENU_DSG_Duree) {
+  if (option == "save") {
+    SaveEEPROM_DSG();
+    Serial.println("Parametres DSG sauvegardes en EEPROM");
+  }
+  // ... autres options DSG existantes
+}
+
+// ============================================================================
+// 8. COMMANDES GLOBALES EEPROM
+// ============================================================================
+// Ajouter dans gererMenu() pour des commandes globales :
+
+else if (option == "save_all") {
+  SaveEEPROM();  // Sauvegarde toutes les données
+  Serial.println("Toutes les donnees sauvegardees en EEPROM");
+}
+
+else if (option == "load_all") {
+  LoadEEPROM();  // Recharge toutes les données
+  Serial.println("Toutes les donnees rechargees depuis EEPROM");
+}
+
+else if (option == "reset_eeprom") {
+  Serial.println("ATTENTION: Reinitialisation de l'EEPROM dans 3 secondes...");
+  delay(3000);
+  ResetEEPROM();
+  Serial.println("EEPROM reinitialisee. Redemarrez l'Arduino pour appliquer les valeurs par defaut.");
+}
+
+else if (option == "eeprom_status") {
+  DisplayEEPROMStatus();
+}
+
+// ============================================================================
+// 9. AFFICHAGE DES OPTIONS SAVE DANS LES MENUS
+// ============================================================================
+// Ajouter dans chaque sous-menu l'option "Save" :
+
+void afficherSousMenu(String menu) {
+  if (menu == MENU_PEDALE) {
+    Serial.println("=== Menu Pedale ===");
+    Serial.println("1.1.1 - Log PPS");
+    Serial.println("1.1.2 - Calibration PPS");
+    Serial.println("1.1.3 - Save PPS en EEPROM");  // ← Option Save
+    Serial.println("11 - Retour");
+  }
+  
+  else if (menu == MENU_PAPILLON) {
+    Serial.println("=== Menu Papillon ===");
+    Serial.println("1.2.1 - Log TPS");
+    Serial.println("1.2.2 - Calibration TPS");
+    Serial.println("1.2.3 - Save TPS en EEPROM");  // ← Option Save
+    Serial.println("11 - Retour");
+  }
+  
+  else if (menu == MENU_REGLAGE_PWM) {
+    Serial.println("=== Menu Reglage PWM ===");
+    Serial.println("Entrez une nouvelle valeur ou commande:");
+    Serial.println("save - Sauvegarder PWM en EEPROM");  // ← Option Save
+    Serial.println("11 - Retour");
+  }
+  
+  // ... répéter pour tous les autres menus
+}
+
+// ============================================================================
+// 10. COMMANDES RAPIDES POUR TEST
+// ============================================================================
+// Commandes à taper directement dans le moniteur série :
+
+// save_pps     - Sauvegarde calibration PPS
+// save_tps     - Sauvegarde calibration TPS
+// save_pwm     - Sauvegarde paramètres PWM
+// save_freq    - Sauvegarde fréquence TPS
+// save_pid_n   - Sauvegarde PID Normal
+// save_pid_a   - Sauvegarde PID Agressif
+// save_dsg     - Sauvegarde paramètres DSG
+// save_all     - Sauvegarde tout
+// load_all     - Recharge tout
+// reset_eeprom - Réinitialise EEPROM
+// eeprom_status - Affiche statut EEPROM 

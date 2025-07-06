@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Console Arduino</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace;
+      background: linear-gradient(145deg, #1e1e2f, #12121c);
+      color: #f0f0f0;
+    }
+    .container {
+      display: flex;
+      padding: 20px;
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-right: 20px;
+    }
+    .buttons button {
+      width: 60px;
+      background: linear-gradient(to right, #444, #555);
+      border: 1px solid #666;
+      color: white;
+      border-radius: 4px;
+      padding: 5px;
+    }
+    .console-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .command-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .command-bar input[type="text"] {
+      flex: 1;
+    }
+    .console {
+      background: #222;
+      border: 1px solid #444;
+      padding: 10px;
+      height: 280px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 20px;
+      white-space: pre-wrap;
+    }
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    select, input[type="text"], button, label {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 5px;
+      border-radius: 4px;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="buttons">
+      <button onclick="sendButton('1')">1</button>
+      <button onclick="sendButton('2')">2</button>
+      <button onclick="sendButton('3')">3</button>
+      <button onclick="sendButton('4')">4</button>
+      <button onclick="sendButton('5')">5</button>
+      <button onclick="sendButton('6')">6</button>
+      <button onclick="sendButton('7')">7</button>
+      <button onclick="sendButton('8')">8</button>
+      <button onclick="sendButton('9')">9</button>
+      <button onclick="sendButton('10')">10</button>
+      <button onclick="sendQuit()">Quit</button>
+    </div>
+
+    <div class="console-wrapper">
+      <div class="command-bar">
+        <input type="text" id="commandInput" placeholder="Entrez une commande">
+        <button onclick="sendCommand()">Envoyer</button>
+      </div>
+      <pre class="console" id="consoleOutput"></pre>
+      <div class="controls">
+        <label for="baudRate">Baud rate:</label>
+        <select id="baudRate">
+          <option>9600</option>
+          <option>19200</option>
+          <option>38400</option>
+          <option>57600</option>
+          <option selected>115200</option>
+        </select>
+
+        <label for="lineEnding">Fin de ligne:</label>
+        <select id="lineEnding">
+          <option value="">Pas de fin</option>
+          <option value="\n">Nouvelle ligne (\n)</option>
+          <option value="\r">Retour charriot (\r)</option>
+          <option value="\r\n">NL + CR (\r\n)</option>
+        </select>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="autoScroll" checked>
+          <label for="autoScroll">Défilement auto</label>
+        </div>
+
+        <button onclick="connectSerial()">Connecter</button>
+        <select id="comPort">
+          <option>COM1</option>
+          <option>COM2</option>
+          <option>COM3</option>
+          <option>COM4</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const consoleOutput = document.getElementById("consoleOutput");
+    let serialPort;
+    let textDecoder;
+    let reader;
+    let readBuffer = "";
+
+    function appendToConsole(text) {
+      const lines = consoleOutput.textContent.split("\n");
+      lines.push(text);
+      while (lines.length > 14) lines.shift();
+      consoleOutput.textContent = lines.join("\n");
+      if (document.getElementById("autoScroll").checked) {
+        consoleOutput.scrollTop = consoleOutput.scrollHeight;
+      }
+    }
+
+    async function connectSerial() {
+      try {
+        serialPort = await navigator.serial.requestPort();
+        const baud = parseInt(document.getElementById("baudRate").value);
+        await serialPort.open({ baudRate: baud });
+
+        textDecoder = new TextDecoderStream();
+        const readableStreamClosed = serialPort.readable.pipeTo(textDecoder.writable);
+        reader = textDecoder.readable.getReader();
+
+        appendToConsole(`[Connecté à un port série @ ${baud} bauds]`);
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value) processSerialData(value);
+        }
+      } catch (err) {
+        appendToConsole("[Erreur de connexion: " + err.message + "]");
+      }
+    }
+
+    function processSerialData(data) {
+      readBuffer += data;
+      let lines = readBuffer.split("\n");
+      readBuffer = lines.pop();
+      for (const line of lines) {
+        appendToConsole(line.replace(/\r$/, ""));
+      }
+    }
+
+    async function sendCommand() {
+      if (!serialPort || !serialPort.writable) return;
+      const input = document.getElementById("commandInput").value;
+      const ending = document.getElementById("lineEnding").value;
+      const writer = serialPort.writable.getWriter();
+      await writer.write(new TextEncoder().encode(input + ending));
+      writer.releaseLock();
+      appendToConsole("> " + input);
+    }
+
+    async function sendButton(val) {
+      if (!serialPort || !serialPort.writable) return;
+      const ending = document.getElementById("lineEnding").value;
+      const writer = serialPort.writable.getWriter();
+      await writer.write(new TextEncoder().encode(val + ending));
+      writer.releaseLock();
+      appendToConsole("> " + val);
+    }
+
+    async function sendQuit() {
+      if (!serialPort || !serialPort.writable) return;
+      const writer = serialPort.writable.getWriter();
+      await writer.write(new TextEncoder().encode("q"));
+      writer.releaseLock();
+      appendToConsole("> q");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+// Exemple d'ajout de commandes EEPROM dans le menu
+// À ajouter dans le fichier Menu.cpp
+
+// Dans la fonction gererMenu(), ajouter ces cas :
+
+// Commande pour sauvegarder manuellement
+else if (option == "save") {
+  SaveEEPROM();
+  Serial.println("Calibration sauvegardee manuellement");
+}
+
+// Commande pour afficher le statut EEPROM
+else if (option == "eeprom") {
+  DisplayEEPROMStatus();
+}
+
+// Commande pour réinitialiser l'EEPROM
+else if (option == "reset_eeprom") {
+  Serial.println("ATTENTION: Reinitialisation de l'EEPROM dans 3 secondes...");
+  delay(3000);
+  ResetEEPROM();
+  Serial.println("EEPROM reinitialisee. Redemarrez l'Arduino pour appliquer les valeurs par defaut.");
+}
+
+// Commande pour forcer la sauvegarde après modification des paramètres PID
+else if (option == "save_pid") {
+  // Mettre à jour l'objet PID
+  throttlePID.SetTunings(kP, kI, kD);
+  // Sauvegarder en EEPROM
+  SaveEEPROM();
+  Serial.println("Parametres PID sauvegardes");
+}
+
+// Dans le menu principal, ajouter ces options :
+// "save" - Sauvegarder la calibration actuelle
+// "eeprom" - Afficher le statut EEPROM
+// "reset_eeprom" - Reinitialiser l'EEPROM (attention!)
+// "save_pid" - Sauvegarder les parametres PID 
